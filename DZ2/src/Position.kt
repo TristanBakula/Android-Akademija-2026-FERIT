@@ -1,0 +1,3 @@
+enum class Position {
+    GOALKEEPER, DEFENDER, MIDFIELDER, ATTACKER
+}
