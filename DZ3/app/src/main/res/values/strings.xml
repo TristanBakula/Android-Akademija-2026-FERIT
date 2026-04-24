@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">note_app</string>
+
+    <string name="title_notes_list">Notes</string>
+
+    <string name="button_add_note">Add Note</string>
+    <string name="button_retry">Retry</string>
+    <string name="button_done">Done</string>
+
+    <string name="error_load_notes">Failed to load notes</string>
+
+
+
 </resources>

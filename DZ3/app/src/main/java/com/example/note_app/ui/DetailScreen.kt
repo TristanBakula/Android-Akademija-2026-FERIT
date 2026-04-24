@@ -1,4 +1,4 @@
-package com.example.note_app
+package com.example.note_app.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,19 +27,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.note_app.Note
+import com.example.note_app.presentation.EditScreenViewModel
+import androidx.compose.ui.res.stringResource
+import com.example.note_app.R
 
 
 @Composable
 fun DetailScreen(
-    note: Note?,
+    viewModel: EditScreenViewModel,
     onBack: () -> Unit,
-    onSave: (String, String) -> Unit,
 ) {
-
-    var titleText by remember { mutableStateOf(note?.title ?: "")}
-    var descriptionText by remember { mutableStateOf(note?.description ?: "") }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
@@ -57,20 +59,20 @@ fun DetailScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Add",
+                    contentDescription = stringResource(R.string.button_add_note),
                     tint = Color.Black,
                     modifier = Modifier.size(36.dp)
                 )
             }
 
             OutlinedTextField(
-                value = titleText,
-                onValueChange = { titleText = it },
+                value = viewModel.titleText,
+                onValueChange = { viewModel.titleText = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .height(80.dp),
-                textStyle = androidx.compose.ui.text.TextStyle(
+                textStyle = TextStyle(
                     fontSize = 22.sp,
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -83,13 +85,13 @@ fun DetailScreen(
             )
 
             OutlinedTextField(
-                value = descriptionText,
-                onValueChange = { descriptionText = it },
+                value = viewModel.descriptionText,
+                onValueChange = { viewModel.descriptionText = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
                     .padding(horizontal = 16.dp),
-                textStyle = androidx.compose.ui.text.TextStyle(
+                textStyle = TextStyle(
                     fontSize = 18.sp,
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -106,11 +108,14 @@ fun DetailScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = { onSave(titleText, descriptionText) },
+                onClick = {
+                    viewModel.saveNote()
+                    onBack()
+                          },
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 colors = ButtonDefaults.buttonColors(Color.Red)
             ) {
-                Text(text = "Done")
+                Text(text = stringResource(R.string.button_done))
             }
 
         }
