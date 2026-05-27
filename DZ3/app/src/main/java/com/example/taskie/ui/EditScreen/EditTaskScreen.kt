@@ -1,4 +1,4 @@
-package com.example.note_app.ui
+package com.example.note_app.ui.EditScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,28 +20,41 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.note_app.Note
-import com.example.note_app.presentation.EditScreenViewModel
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.note_app.R
+import com.example.note_app.ui.LoginScreen.LoginViewModel
 
 
 @Composable
-fun DetailScreen(
-    viewModel: EditScreenViewModel,
+fun EditTaskScreen(
+    taskId: String,
     onBack: () -> Unit,
 ) {
+
+    val context = LocalContext.current
+
+    val viewModel: EditTaskScreenViewModel = viewModel(
+        factory = EditTaskScreenViewModel.provideFactory(context)
+    )
+
+    LaunchedEffect(taskId) {
+        viewModel.initTask(taskId)
+    }
+
+    LaunchedEffect(viewModel.isSaved) {  // tek kad se spremi vraca ga natrag
+        if (viewModel.isSaved) {
+            onBack()
+        }
+    }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
@@ -50,6 +63,14 @@ fun DetailScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
 
         ) {
+            if (viewModel.errorMessage.isNotEmpty()) {
+                Text(
+                    text = viewModel.errorMessage,        color = Color.Red,
+                    modifier = Modifier.padding(16.dp),
+                    fontSize = 14.sp
+                )
+            }
+
             Button(
                 onClick = { onBack() },
                 contentPadding = PaddingValues(0.dp),
@@ -59,7 +80,7 @@ fun DetailScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.button_add_note),
+                    contentDescription = stringResource(R.string.button_add_task),
                     tint = Color.Black,
                     modifier = Modifier.size(36.dp)
                 )
@@ -85,8 +106,8 @@ fun DetailScreen(
             )
 
             OutlinedTextField(
-                value = viewModel.descriptionText,
-                onValueChange = { viewModel.descriptionText = it },
+                value = viewModel.bodyText,
+                onValueChange = { viewModel.bodyText = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
@@ -109,8 +130,7 @@ fun DetailScreen(
 
             Button(
                 onClick = {
-                    viewModel.saveNote()
-                    onBack()
+                    viewModel.saveTask()
                           },
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 colors = ButtonDefaults.buttonColors(Color.Red)
