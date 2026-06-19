@@ -1,0 +1,86 @@
+package com.example.note_app.ui.EditScreen
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.example.note_app.data.repository.RetrofitTaskieRepository
+import com.example.note_app.ui.ListScreen.ErrorScreen
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+class EditTaskScreenViewModel(private val repository: RetrofitTaskieRepository) : ViewModel() {
+
+    var titleText by mutableStateOf("")
+    var bodyText by mutableStateOf("")
+
+    var isSaved by mutableStateOf(false) // ako je true vraca ga natrag kad spremi
+
+    private var currentTaskId: String? = null
+
+    var errorMessage by mutableStateOf("")
+
+    fun initTask(id: String) {
+        currentTaskId = id
+        if(id == "-1") return
+
+        viewModelScope.launch {
+            try {
+                val response = repository.getTask(id)
+                if(response.isSuccessful) {
+                    val task = response.body()
+                    titleText = task?.title ?: ""
+                    bodyText = task?.body ?: ""
+                }
+            } catch (e: Exception) {
+                errorMessage = "Task failed to load"
+            }
+        }
+    }
+
+    fun saveTask() {
+        viewModelScope.launch {
+            try {
+                if(currentTaskId == "-1") {
+                    val response = repository.createTask(titleText, bodyText)
+                    if(response.isSuccessful) {
+                        val newId = response.body()?.id
+                        if (newId != null) {
+                            val dateString = SimpleDateFormat(
+                                "dd.MM.yyyy",
+                                Locale.getDefault()
+                            )
+                                .format(Date())
+                            repository.saveTaskDate(newId, dateString)
+                        }
+                        isSaved = true
+                    }
+                } else {
+                    val id = currentTaskId ?: return@launch
+                    val response = repository.updateTask(id, titleText, bodyText)
+                    if(response.isSuccessful) {
+                        isSaved = true
+                    }
+                }
+            } catch (e: Exception) {
+                errorMessage = "Task failed to save"
+            }
+
+        }
+    }
+
+    companion object {
+        fun provideFactory(context: android.content.Context): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                val sessionManager = com.example.note_app.data.SessionManager(context)
+                val repository = com.example.note_app.data.repository.RetrofitTaskieRepository(sessionManager)
+                return EditTaskScreenViewModel(repository) as T
+            }
+        }
+    }
+}
