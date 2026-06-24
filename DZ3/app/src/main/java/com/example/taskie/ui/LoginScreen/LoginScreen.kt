@@ -1,4 +1,4 @@
-package com.example.note_app.ui.LoginScreen
+package com.example.taskie.ui.LoginScreen
 
 
 
@@ -35,17 +35,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.note_app.R
+import com.example.taskie.R
+import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
 fun LoginScreen(
     onLoginClick: () -> Unit
 ) {
-    val context = LocalContext.current
-    val viewModel: LoginViewModel = viewModel(
-        factory = LoginViewModel.provideFactory(context)
-    )
+    val viewModel: LoginViewModel = koinViewModel()
     LaunchedEffect(viewModel.loginSuccess) {
         if (viewModel.loginSuccess) {
             onLoginClick()
@@ -82,7 +80,7 @@ fun LoginScreen(
 
             OutlinedTextField(
                 value = viewModel.username,
-                onValueChange = { viewModel.username = it },  //{ viewModel.username = it },
+                onValueChange = { viewModel.username = it },
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .padding(16.dp, 8.dp),

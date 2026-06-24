@@ -1,19 +1,22 @@
-package com.example.note_app.ui.EditScreen
+package com.example.taskie.ui.EditScreen
 
+import android.service.notification.Condition.newId
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.note_app.data.repository.RetrofitTaskieRepository
-import com.example.note_app.ui.ListScreen.ErrorScreen
+import com.example.taskie.data.repository.RetrofitTaskieRepository
+import com.example.taskie.ui.ListScreen.ErrorScreen
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.taskie.data.model.Task
+import com.example.taskie.data.repository.TaskieRepository
 
-class EditTaskScreenViewModel(private val repository: RetrofitTaskieRepository) : ViewModel() {
+class EditTaskScreenViewModel(private val repository: TaskieRepository) : ViewModel() {
 
     var titleText by mutableStateOf("")
     var bodyText by mutableStateOf("")
@@ -30,11 +33,18 @@ class EditTaskScreenViewModel(private val repository: RetrofitTaskieRepository) 
 
         viewModelScope.launch {
             try {
-                val response = repository.getTask(id)
-                if(response.isSuccessful) {
-                    val task = response.body()
-                    titleText = task?.title ?: ""
-                    bodyText = task?.body ?: ""
+                val localTask= repository.getTaskByIdLocal(id)
+
+                if(localTask!= null) {
+                    titleText = localTask.title ?: ""
+                    bodyText = localTask.body ?: ""
+                } else {
+                    val response = repository.getTask(id)
+                    if (response.isSuccessful) {
+                        val task = response.body()
+                        titleText = task?.title ?: ""
+                        bodyText = task?.body ?: ""
+                    }
                 }
             } catch (e: Exception) {
                 errorMessage = "Task failed to load"
@@ -46,19 +56,10 @@ class EditTaskScreenViewModel(private val repository: RetrofitTaskieRepository) 
         viewModelScope.launch {
             try {
                 if(currentTaskId == "-1") {
-                    val response = repository.createTask(titleText, bodyText)
-                    if(response.isSuccessful) {
-                        val newId = response.body()?.id
-                        if (newId != null) {
-                            val dateString = SimpleDateFormat(
-                                "dd.MM.yyyy",
-                                Locale.getDefault()
-                            )
-                                .format(Date())
-                            repository.saveTaskDate(newId, dateString)
-                        }
-                        isSaved = true
-                    }
+
+                    repository.createTask(titleText, bodyText)
+                    isSaved = true
+
                 } else {
                     val id = currentTaskId ?: return@launch
                     val response = repository.updateTask(id, titleText, bodyText)
@@ -70,17 +71,6 @@ class EditTaskScreenViewModel(private val repository: RetrofitTaskieRepository) 
                 errorMessage = "Task failed to save"
             }
 
-        }
-    }
-
-    companion object {
-        fun provideFactory(context: android.content.Context): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val sessionManager = com.example.note_app.data.SessionManager(context)
-                val repository = com.example.note_app.data.repository.RetrofitTaskieRepository(sessionManager)
-                return EditTaskScreenViewModel(repository) as T
-            }
         }
     }
 }

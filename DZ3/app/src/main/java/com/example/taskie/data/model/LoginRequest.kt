@@ -1,4 +1,4 @@
-package com.example.note_app.data.model
+package com.example.taskie.data.model
 
 import kotlinx.serialization.Serializable
 

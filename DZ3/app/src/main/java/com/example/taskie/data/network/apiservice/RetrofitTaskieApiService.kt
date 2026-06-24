@@ -1,11 +1,11 @@
-package com.example.note_app.data.network.apiservice
+package com.example.taskie.data.network.apiservice
 
-import com.example.note_app.data.model.CreateTaskRequest
-import com.example.note_app.data.model.CreateTaskResponse
-import com.example.note_app.data.model.LoginRequest
-import com.example.note_app.data.model.LoginResponse
-import com.example.note_app.data.model.Task
-import com.example.note_app.data.model.TaskResponse
+import com.example.taskie.data.model.CreateTaskRequest
+import com.example.taskie.data.model.CreateTaskResponse
+import com.example.taskie.data.model.LoginRequest
+import com.example.taskie.data.model.LoginResponse
+import com.example.taskie.data.model.Task
+import com.example.taskie.data.model.TaskResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

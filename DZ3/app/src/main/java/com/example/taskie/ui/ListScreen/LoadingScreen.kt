@@ -1,4 +1,4 @@
-package com.example.note_app.ui.ListScreen
+package com.example.taskie.ui.ListScreen
 
 
 import androidx.compose.foundation.layout.Box

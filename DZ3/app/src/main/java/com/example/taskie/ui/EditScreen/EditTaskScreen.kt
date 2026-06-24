@@ -1,4 +1,4 @@
-package com.example.note_app.ui.EditScreen
+package com.example.taskie.ui.EditScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,8 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.note_app.R
-import com.example.note_app.ui.LoginScreen.LoginViewModel
+import com.example.taskie.R
+import com.example.taskie.ui.LoginScreen.LoginViewModel
+import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
@@ -40,11 +41,7 @@ fun EditTaskScreen(
     onBack: () -> Unit,
 ) {
 
-    val context = LocalContext.current
-
-    val viewModel: EditTaskScreenViewModel = viewModel(
-        factory = EditTaskScreenViewModel.provideFactory(context)
-    )
+    val viewModel: EditTaskScreenViewModel = koinViewModel()
 
     LaunchedEffect(taskId) {
         viewModel.initTask(taskId)

@@ -2,15 +2,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.devtools.ksp)
     kotlin("plugin.serialization") version "2.0.21"
 }
 
 android {
-    namespace = "com.example.note_app"
+    namespace = "com.example.taskie"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.note_app"
+        applicationId = "com.example.taskie"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -63,4 +64,11 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
 }

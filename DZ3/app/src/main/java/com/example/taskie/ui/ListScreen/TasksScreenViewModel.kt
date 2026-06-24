@@ -1,15 +1,16 @@
-package com.example.note_app.ui.ListScreen
+package com.example.taskie.ui.ListScreen
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.note_app.R
-import com.example.note_app.data.model.Task
-import com.example.note_app.data.repository.RetrofitTaskieRepository
-import com.example.note_app.data.repository.TaskieRepository
+import com.example.taskie.R
+import com.example.taskie.data.model.Task
+import com.example.taskie.data.repository.RetrofitTaskieRepository
+import com.example.taskie.data.repository.TaskieRepository
 import androidx.compose.runtime.State
+import com.example.taskie.data.database.entities.toTask
 import kotlinx.coroutines.launch
 
 class TasksScreenViewModel(private val repository: TaskieRepository) : ViewModel() {
@@ -24,22 +25,27 @@ class TasksScreenViewModel(private val repository: TaskieRepository) : ViewModel
 
     fun getTaskDate(taskId: String): String? = repository.getTaskDate(taskId)
 
+    init {
+        viewModelScope.launch {
+            repository.getTasksFlow().collect { entities ->
+                val tasks = entities.map { it.toTask() }
+                _tasksListUIState.value = TasksListUiState.Loaded(list = tasks)
+            }
+        }
+
+        getTasks()
+    }
+
     fun getTasks() {
         viewModelScope.launch {
-            _tasksListUIState.value = TasksListUiState.Loading
 
             try {
-                val response = repository.getTasks()
+                repository.getTasks()
 
-                if (response.isSuccessful) {
-                    val taskList = response.body()?.tasks ?: emptyList()
-                    _tasksListUIState.value = TasksListUiState.Loaded(list = taskList)
-                } else {
-                    _tasksListUIState.value = TasksListUiState.Failure(R.string.error_load_tasks)
-                }
             } catch (e: Exception) {
-                android.util.Log.e("TasksError", "Greška pri dohvatu: ${e.message}", e)
-                _tasksListUIState.value = TasksListUiState.Failure(R.string.error_no_internet)
+                if (_tasksListUIState.value is TasksListUiState.Loading) {
+                    _tasksListUIState.value = TasksListUiState.Failure(R.string.error_no_internet)
+                }
             }
         }
     }
@@ -53,22 +59,11 @@ class TasksScreenViewModel(private val repository: TaskieRepository) : ViewModel
                     getTasks()
                 }
             } catch (e: Exception) {
-                android.util.Log.e("TasksError", "Greška pri brisanju: ${e.message}", e)
+                android.util.Log.e("TasksError", "Error while deleting: ${e.message}", e)
             }
         }
     }
 
-    companion object {
-        fun provideFactory(context: android.content.Context): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    val sessionManager = com.example.note_app.data.SessionManager(context)
-                    val repository = RetrofitTaskieRepository(sessionManager)
-                    return TasksScreenViewModel(repository) as T
-                }
-            }
-    }
 }
 
 sealed interface TasksListUiState {

@@ -1,4 +1,4 @@
-package com.example.note_app.ui.ListScreen
+package com.example.taskie.ui.ListScreen
 
 import android.R.attr.maxLines
 import android.R.attr.onClick
@@ -53,18 +53,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.note_app.R
-import com.example.note_app.data.model.Task
+import com.example.taskie.R
+import com.example.taskie.data.model.Task
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun TasksListScreen(
     onAddClick: () -> Unit,
     onTaskClick: (String?) -> Unit
 ) {
-    val context = LocalContext.current
-    val viewModel: TasksScreenViewModel = viewModel(
-        factory = TasksScreenViewModel.provideFactory(context)
-    )
+    val viewModel: TasksScreenViewModel = koinViewModel()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {

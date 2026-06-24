@@ -1,4 +1,4 @@
-package com.example.note_app.ui.theme
+package com.example.taskie.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

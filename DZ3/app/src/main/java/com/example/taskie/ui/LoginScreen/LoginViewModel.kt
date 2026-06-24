@@ -1,4 +1,4 @@
-package com.example.note_app.ui.LoginScreen
+package com.example.taskie.ui.LoginScreen
 
 import android.util.Log.e
 import androidx.compose.foundation.pager.rememberPagerState
@@ -8,9 +8,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.note_app.data.model.LoginRequest
-import com.example.note_app.data.repository.RetrofitTaskieRepository
-import com.example.note_app.data.repository.TaskieRepository
+import com.example.taskie.data.model.LoginRequest
+import com.example.taskie.data.repository.RetrofitTaskieRepository
+import com.example.taskie.data.repository.TaskieRepository
+import com.example.taskie.data.database.TaskieDatabase
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
@@ -45,16 +46,6 @@ class LoginViewModel(
                 errorMessage = "Internet error: ${e.message}"
             }
         }
-            }
-
-    companion object {
-        fun provideFactory(context: android.content.Context): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val sessionManager = com.example.note_app.data.SessionManager(context)
-                val repository = RetrofitTaskieRepository(sessionManager)
-                return LoginViewModel(repository) as T
-            }
-        }
     }
+
 }
