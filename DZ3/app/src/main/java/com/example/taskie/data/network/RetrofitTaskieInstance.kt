@@ -1,6 +1,6 @@
-package com.example.note_app.data.network
+package com.example.taskie.data.network
 
-import com.example.note_app.data.network.apiservice.RetrofitTaskieApiService
+import com.example.taskie.data.network.apiservice.RetrofitTaskieApiService
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory

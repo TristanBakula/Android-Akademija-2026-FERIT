@@ -1,4 +1,4 @@
-package com.example.note_app
+package com.example.taskie
 
 import org.junit.Test
 

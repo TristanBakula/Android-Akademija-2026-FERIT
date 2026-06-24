@@ -1,4 +1,4 @@
-package com.example.note_app
+package com.example.taskie
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

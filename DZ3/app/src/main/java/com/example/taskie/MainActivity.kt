@@ -1,4 +1,4 @@
-package com.example.note_app
+package com.example.taskie
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,10 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.note_app.ui.theme.Note_appTheme
-import com.example.note_app.ui.EditScreen.EditTaskScreen
-import com.example.note_app.ui.ListScreen.TasksListScreen
-import com.example.note_app.ui.LoginScreen.LoginScreen
+import com.example.taskie.data.SessionManager
+import com.example.taskie.ui.theme.Note_appTheme
+import com.example.taskie.ui.EditScreen.EditTaskScreen
+import com.example.taskie.ui.ListScreen.TasksListScreen
+import com.example.taskie.ui.LoginScreen.LoginScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +22,9 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             Note_appTheme {
-                NavHost(navController = navController, startDestination = "login") {
+                val sessionManager = SessionManager(this)
+                val startDestination = if (sessionManager.getToken() != null) "list" else "login"
+                NavHost(navController = navController, startDestination = startDestination) {
 
                     composable("login") {
                         LoginScreen( onLoginClick = {

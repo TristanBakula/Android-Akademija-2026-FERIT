@@ -1,4 +1,4 @@
-package com.example.note_app.ui.ListScreen
+package com.example.taskie.ui.ListScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.note_app.R
+import com.example.taskie.R
 
 @Composable
 fun ErrorScreen(messageResId: Int, onRetryClick: () -> Unit) {

@@ -1,16 +1,10 @@
-package com.example.note_app.data.model
+package com.example.taskie.data.model
 
 import kotlinx.serialization.Serializable
+import com.example.taskie.data.model.Task
 
 @Serializable
 data class TaskResponse(
     val tasks: List<Task>
 )
 
-@Serializable
-data class Task(
-    val id: String? = null,
-    val title: String? = null,
-    val body: String? = null,
-    val username: String? = null
-)
