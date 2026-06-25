@@ -12,12 +12,14 @@ data class TaskEntity(
     val title: String? = null,
     val body: String? = null,
     val username: String? = null,
-    val isSynced : Boolean = false
+    val isSynced : Boolean = false,
+    val isCompleted : Boolean = false
 )
 
 fun TaskEntity.toTask(): Task = Task(
     id = id,
     title = title,
     body = body,
-    username = username
+    username = username,
+    isCompleted = isCompleted
 )

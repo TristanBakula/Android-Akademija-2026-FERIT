@@ -57,7 +57,11 @@ class EditTaskScreenViewModel(private val repository: TaskieRepository) : ViewMo
             try {
                 if(currentTaskId == "-1") {
 
-                    repository.createTask(titleText, bodyText)
+                    val response = repository.createTask(titleText, bodyText)
+
+                    val serverId = response.body()?.id ?: ""
+                    val date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
+                    repository.saveTaskDate(serverId, date)
                     isSaved = true
 
                 } else {

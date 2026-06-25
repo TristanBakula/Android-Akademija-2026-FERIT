@@ -17,4 +17,8 @@ class SessionManager(context: Context) {
 
     fun getTaskDate(taskId: String): String? =
         prefs.getString("task_date_$taskId", null)
+
+    fun clearSession() {
+        prefs.edit().clear().apply()
+    }
 }

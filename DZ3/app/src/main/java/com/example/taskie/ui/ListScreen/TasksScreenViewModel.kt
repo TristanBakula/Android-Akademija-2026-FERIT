@@ -10,8 +10,15 @@ import com.example.taskie.data.model.Task
 import com.example.taskie.data.repository.RetrofitTaskieRepository
 import com.example.taskie.data.repository.TaskieRepository
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.example.taskie.data.database.entities.toTask
+import kotlinx.coroutines.NonCancellable.isCompleted
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import org.koin.core.KoinApplication.Companion.init
 
 class TasksScreenViewModel(private val repository: TaskieRepository) : ViewModel() {
 
@@ -23,14 +30,35 @@ class TasksScreenViewModel(private val repository: TaskieRepository) : ViewModel
 
     val currentUsername: String? = repository.getUsername()
 
+    private val _currentFilter = MutableStateFlow(FilterType.ALL)
+    val currentFilter: StateFlow<FilterType> = _currentFilter
+
+    fun toggleTaskCompleted(taskId: String, isCompleted: Boolean) {
+        viewModelScope.launch {
+            repository.updateTaskCompleted(taskId, isCompleted)
+        }
+    }
+
+    fun setFilter(filter: FilterType) {
+        _currentFilter.value = filter
+    }
+
     fun getTaskDate(taskId: String): String? = repository.getTaskDate(taskId)
 
     init {
         viewModelScope.launch {
-            repository.getTasksFlow().collect { entities ->
-                val tasks = entities.map { it.toTask() }
-                _tasksListUIState.value = TasksListUiState.Loaded(list = tasks)
+            repository.getTasksFlow()
+                .combine(_currentFilter) { entities, filter ->
+                    val tasks = entities.map { it.toTask() }
+                    when (filter) {
+                        FilterType.ALL -> tasks
+                        FilterType.COMPLETED -> tasks.filter { it.isCompleted }
+                        FilterType.DOING -> tasks.filter { !it.isCompleted }
+                    }
             }
+                .collect { filteredTasks ->
+                    _tasksListUIState.value = TasksListUiState.Loaded(filteredTasks)
+                }
         }
 
         getTasks()
@@ -64,6 +92,13 @@ class TasksScreenViewModel(private val repository: TaskieRepository) : ViewModel
         }
     }
 
+    fun logout(onLoggedOut: () -> Unit) {
+        viewModelScope.launch {
+            repository.logout()
+            onLoggedOut()
+        }
+    }
+
 }
 
 sealed interface TasksListUiState {
@@ -71,3 +106,5 @@ sealed interface TasksListUiState {
     data object Loading : TasksListUiState
     data class Failure(val messageResId: Int) : TasksListUiState
 }
+
+enum class FilterType { ALL, DOING, COMPLETED }
