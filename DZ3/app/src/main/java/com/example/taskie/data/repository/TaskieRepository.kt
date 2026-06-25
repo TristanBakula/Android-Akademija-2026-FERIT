@@ -41,6 +41,10 @@ interface TaskieRepository {
 
     fun saveTaskDate(taskId: String, date: String)
     fun getTaskDate(taskId: String): String?
+
+    suspend fun updateTaskCompleted(taskId: String, isCompleted: Boolean)
+
+    suspend fun logout()
 }
 
 

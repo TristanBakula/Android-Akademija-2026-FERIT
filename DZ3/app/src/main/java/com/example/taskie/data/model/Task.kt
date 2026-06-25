@@ -11,7 +11,8 @@ data class Task(
     val id: String? = null,
     val title: String? = null,
     val body: String? = null,
-    val username: String? = null
+    val username: String? = null,
+    val isCompleted : Boolean = false
 )
 
 
@@ -20,6 +21,7 @@ fun Task.toEntity(): TaskEntity {
         id = this.id ?: "",
         title = this.title,
         body = this.body,
-        username = this.username
+        username = this.username,
+        isCompleted = this.isCompleted
     )
 }

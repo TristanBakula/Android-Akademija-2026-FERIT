@@ -42,27 +42,10 @@ class RetrofitTaskieRepository(
         return response
     }
 
-    /*private suspend fun syncPendingTasks() {
-        val allTasks = taskDao.getAllTasks().first()
-        val unsynced = allTasks.filter { !it.isSynced }
+    override suspend fun updateTaskCompleted(taskId: String, isCompleted: Boolean) {
+        taskDao.updateTaskCompleted(taskId, isCompleted)
+    }
 
-        for (task in unsynced) {
-            try {
-                val token = sessionManager.getToken() ?: continue
-                val response = RetrofitTaskieInstance.api.createTask(
-                    "Bearer $token",
-                    CreateTaskRequest(task.title ?: "", task.body ?: "")
-                )
-                if (response.isSuccessful) {
-                    val serverId = response.body()?.id?.toString() ?: continue
-                    taskDao.deleteTaskById(task.id)
-                    taskDao.insertTask(task.copy(id = serverId, isSynced = true))
-                }
-            } catch (e: Exception) {
-
-            }
-        }
-    } */
 
     override fun getTasksFlow(): Flow<List<TaskEntity>> {
         return taskDao.getAllTasks()
@@ -156,4 +139,9 @@ class RetrofitTaskieRepository(
 
     override fun getTaskDate(taskId: String): String? =
         sessionManager.getTaskDate(taskId)
+
+    override suspend fun logout() {
+        sessionManager.clearSession()
+        taskDao.clearAllTasks()
+    }
 }

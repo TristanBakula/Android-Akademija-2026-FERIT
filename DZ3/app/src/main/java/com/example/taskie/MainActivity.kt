@@ -41,6 +41,11 @@ class MainActivity : ComponentActivity() {
                             onAddClick = { navController.navigate("detail/-1") },
                             onTaskClick = { taskId ->
                                 navController.navigate("detail/$taskId") },
+                            onLogoutClick = {
+                                navController.navigate("login") {
+                                    popUpTo("list") { inclusive = true }
+                                }
+                            }
 
                         )
 
